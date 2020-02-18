@@ -6,34 +6,34 @@ const mongoose = require('mongoose');
 router.get('/', (req, res, next) => {
 
     Product.find(req.params.productId)
-    .select('name price _id')
-    .then((results) => {
-        console.log("data".results);
-        if (results) {
-            let Products = results.map((doc) => {
-                return {
-                    name: doc.name,
-                    price: doc.price,
-                    _id: doc._id,
-                    request: {
-                        type: 'GET'
+        .select('name price _id')
+        .then((results) => {
+            console.log("data".results);
+            if (results) {
+                let Products = results.map((doc) => {
+                    return {
+                        name: doc.name,
+                        price: doc.price,
+                        _id: doc._id,
+                        request: {
+                            type: 'GET'
+                        }
                     }
-                }
-            })
-            res.status(200).json({
-                messege: 'data found',
-                data: {
-                    'length':results.length,
-                    products:Products
-                }
-            })
-        } else {
-            res.status(404).json({
-                messege: 'data not found',
-                data: {}
-            })
-        }
-    })
+                })
+                res.status(200).json({
+                    messege: 'data found',
+                    data: {
+                        'length': results.length,
+                        products: Products
+                    }
+                })
+            } else {
+                res.status(404).json({
+                    messege: 'data not found',
+                    data: {}
+                })
+            }
+        })
         .catch((e) => {
             console.log("error", e);
             res.status(500).json({
@@ -43,21 +43,23 @@ router.get('/', (req, res, next) => {
         })
 })
 router.get('/:productId', (req, res, next) => {
-    //const product = new Product();
-    Product.findById(req.params.productId).then((results) => {
-        console.log("data".results);
-        if (results) {
-            res.status(200).json({
-                messege: 'data found',
-                data: results
-            })
-        } else {
-            res.status(404).json({
-                messege: 'data not found',
-                data: {}
-            })
-        }
-    })
+
+    Product.findById(req.params.productId)
+        .select('name price _id')
+        .then((results) => {
+            console.log("data".results);
+            if (results) {
+                res.status(200).json({
+                    messege: 'data found',
+                    data: results
+                })
+            } else {
+                res.status(404).json({
+                    messege: 'data not found',
+                    data: {}
+                })
+            }
+        })
         .catch((e) => {
             console.log("error", e);
             res.status(500).json({
@@ -79,7 +81,13 @@ router.post('/', (req, res, next) => {
         console.log("results", results);
         res.status(200).json({
             messege: 'save success',
-            data: product
+            data: {
+                name: product.name,
+                price: product.price,
+                request: {
+                    method: 'GET'
+                }
+            }
         })
     })
         .catch((err) => {
@@ -97,11 +105,14 @@ router.delete('/:productId', (req, res, next) => {
         .exec()
         .then((results) => {
             res.status(200).json({
-                data:results
+                data: {
+                    messege: "item deleted",
+                    data: {}
+                }
             })
         })
         .catch((e) => {
-            
+
         })
 })
 
@@ -116,7 +127,9 @@ router.patch('/:productId', (req, res, next) => {
         .exec()
         .then((results) => {
             res.status(200).json({
-                data: results
+                data: {
+                    messege: 'data updated'
+                }
             })
         })
         .catch((e) => {
