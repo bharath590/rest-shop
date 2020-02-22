@@ -5,7 +5,7 @@ const orderRoutes = require('./api/routes/order');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-
+const userRoutes = require('./api/routes/user')
 
 app.use(morgan('dev'));
 
@@ -25,8 +25,10 @@ app.use((req,res,next)=>{
 })
 app.use('/products', productRoutes);
 app.use('/order', orderRoutes);
+app.use('/user',userRoutes);
 mongoose.connect('mongodb://localhost/restshop');
 
+mongoose.Promise = global.Promise;
 
 app.use((req, res, next) => {
     let error = new Error('Not Found!')
